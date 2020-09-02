@@ -1,7 +1,9 @@
 {
   "JsonRPCAddress": "http://polaris2.ont.io:20336",
   "WalletFile": "./wallet.dat",
-  "Interval": 10,
+  "ScanInterval": 1,
+  "FulfillInterval": 60,
+  "OracleAddress": "",
   "GasPrice": 2500,
   "GasLimit": 20000
 }

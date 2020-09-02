@@ -2,25 +2,31 @@ package service
 
 import (
 	sdk "github.com/ontio/ontology-go-sdk"
-	"github.com/siovanus/PriceFeed/config"
 )
 
 type PriceFeedService struct {
 	account     *sdk.Account
 	ontologySdk *sdk.OntologySdk
-	config      *config.Config
-	prices      map[string]Prices
+	prices      map[string]*Prices
 }
 
 func NewPriceFeedService(account *sdk.Account, ontologySdk *sdk.OntologySdk) *PriceFeedService {
 	svr := &PriceFeedService{
 		account:     account,
 		ontologySdk: ontologySdk,
-		config:      config.DefConfig,
+		prices:      make(map[string]*Prices),
 	}
+	svr.prices[ONT] = NewPrices()
+	svr.prices[BTC] = NewPrices()
+	svr.prices[ETH] = NewPrices()
+	svr.prices[DAI] = NewPrices()
 	return svr
 }
 
 func (this *PriceFeedService) Run() {
-	go parseOntData()
+	go this.parseOntData()
+	go this.parseBtcData()
+	go this.parseEthData()
+	go this.parseDaiData()
+	go this.fulfillOracle()
 }

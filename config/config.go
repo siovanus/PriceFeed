@@ -36,11 +36,13 @@ var DefConfig = NewConfig()
 
 //Config object used by ontology-instance
 type Config struct {
-	JsonRpcAddress string
-	WalletFile     string
-	Interval       uint64
-	GasPrice       uint64
-	GasLimit       uint64
+	JsonRpcAddress  string
+	WalletFile      string
+	ScanInterval    uint64
+	FulfillInterval uint64
+	OracleAddress   string
+	GasPrice        uint64
+	GasLimit        uint64
 }
 
 //NewConfig retuen a TestConfig instance

@@ -20,8 +20,11 @@ package fetcher
 
 import (
 	"encoding/json"
-	"fmt"
+	"math"
+	"strconv"
 )
+
+const DECIMAL = 9
 
 type OkexResp struct {
 	Last string `json:"last"`
@@ -34,6 +37,53 @@ func OkexParse(input []byte) (uint64, error) {
 		return 0, err
 	}
 
-	fmt.Println("###", okexResp.Last)
-	return 0, nil
+	r, err := strconv.ParseFloat(okexResp.Last, 64)
+	if err != nil {
+		return 0, err
+	}
+	price := uint64(r * math.Pow10(DECIMAL))
+	return price, nil
+}
+
+type BinanceResp struct {
+	Price string `json:"price"`
+}
+
+func BinanceParse(input []byte) (uint64, error) {
+	binanceResp := new(BinanceResp)
+	err := json.Unmarshal(input, binanceResp)
+	if err != nil {
+		return 0, err
+	}
+
+	r, err := strconv.ParseFloat(binanceResp.Price, 64)
+	if err != nil {
+		return 0, err
+	}
+	price := uint64(r * math.Pow10(DECIMAL))
+	return price, nil
+}
+
+type HuobiResp struct {
+	Tick *Tick `json:"tick"`
+}
+
+type Tick struct {
+	Data []*Data `json:"data"`
+}
+
+type Data struct {
+	Price float64 `json:"price"`
+}
+
+func HuobiParse(input []byte) (uint64, error) {
+	huobiResp := new(HuobiResp)
+	err := json.Unmarshal(input, huobiResp)
+	if err != nil {
+		return 0, err
+	}
+
+	r := huobiResp.Tick.Data[0].Price
+	price := uint64(r * math.Pow10(DECIMAL))
+	return price, nil
 }
