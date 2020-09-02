@@ -9,6 +9,7 @@ type PriceFeedService struct {
 	account     *sdk.Account
 	ontologySdk *sdk.OntologySdk
 	config      *config.Config
+	prices      map[string]Prices
 }
 
 func NewPriceFeedService(account *sdk.Account, ontologySdk *sdk.OntologySdk) *PriceFeedService {
@@ -21,7 +22,5 @@ func NewPriceFeedService(account *sdk.Account, ontologySdk *sdk.OntologySdk) *Pr
 }
 
 func (this *PriceFeedService) Run() {
-	go this.SideToAlliance()
-	go this.AllianceToSide()
-	go this.ProcessToAllianceCheckAndRetry()
+	go parseOntData()
 }
