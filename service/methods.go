@@ -10,10 +10,13 @@ import (
 )
 
 const (
-	ONT = "ONT"
-	BTC = "BTC"
-	ETH = "ETH"
-	DAI = "DAI"
+	ONT  = "ONT"
+	BTC  = "BTC"
+	ETH  = "ETH"
+	DAI  = "DAI"
+	USDT = "USDT"
+
+	USDTPRICE = 1
 
 	FULFILLORACLE = "fulfillOracle"
 )
@@ -149,8 +152,8 @@ func (this *PriceFeedService) fulfillOracle() {
 		}
 		txHash, err := this.ontologySdk.WasmVM.InvokeWasmVMSmartContract(config.DefConfig.GasPrice, config.DefConfig.GasLimit,
 			this.account, this.account, contractAddress, FULFILLORACLE,
-			[]interface{}{[]string{ONT, BTC, ETH, DAI}, []uint64{this.prices[ONT].GetPrice(), this.prices[BTC].GetPrice(),
-				this.prices[ETH].GetPrice(), this.prices[DAI].GetPrice()}})
+			[]interface{}{[]string{ONT, BTC, ETH, DAI, USDT}, []uint64{this.prices[ONT].GetPrice(), this.prices[BTC].GetPrice(),
+				this.prices[ETH].GetPrice(), this.prices[DAI].GetPrice(), USDTPRICE}})
 		if err != nil {
 			log.Errorf("fulfillOracle, invoke oracle contract error: %s", err)
 			continue
