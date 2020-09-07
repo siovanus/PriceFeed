@@ -2,6 +2,9 @@ package service
 
 import (
 	"github.com/ontio/ontology/common"
+	"github.com/ontio/ontology/core/payload"
+	"github.com/ontio/ontology/core/types"
+	"github.com/ontio/ontology/smartcontract/states"
 	"time"
 
 	"github.com/siovanus/PriceFeed/config"
@@ -18,7 +21,7 @@ const (
 
 	USDTPRICE = 1
 
-	FULFILLORACLE = "fulfillOracle"
+	FULFILLORACLE = "putUnderlyingPrice"
 )
 
 func (this *PriceFeedService) parseOntData() {
@@ -150,12 +153,45 @@ func (this *PriceFeedService) fulfillOracle() {
 			log.Errorf("fulfillOracle, oracle contract address format error")
 			continue
 		}
-		txHash, err := this.ontologySdk.WasmVM.InvokeWasmVMSmartContract(config.DefConfig.GasPrice, config.DefConfig.GasLimit,
-			this.account, this.account, contractAddress, FULFILLORACLE,
-			[]interface{}{[]string{ONT, BTC, ETH, DAI, USDT}, []uint64{this.prices[ONT].GetPrice(), this.prices[BTC].GetPrice(),
-				this.prices[ETH].GetPrice(), this.prices[DAI].GetPrice(), USDTPRICE}})
+
+		sink := common.NewZeroCopySink(nil)
+		sink.WriteString(FULFILLORACLE)
+		keys := []string{ONT, BTC, ETH, DAI, USDT}
+		values := []uint64{this.prices[ONT].GetPrice(), this.prices[BTC].GetPrice(),
+			this.prices[ETH].GetPrice(), this.prices[DAI].GetPrice(), USDTPRICE}
+		length := uint64(len(keys))
+		sink.WriteVarUint(length)
+		for _, v := range keys {
+			sink.WriteString(v)
+		}
+		sink.WriteVarUint(length)
+		for _, v := range values {
+			sink.WriteI128(common.I128FromUint64(v))
+		}
+
+		contract := &states.WasmContractParam{}
+		contract.Address = contractAddress
+		//bf := bytes.NewBuffer(nil)
+		argbytes := sink.Bytes()
+		contract.Args = argbytes
+
+		invokePayload := &payload.InvokeCode{
+			Code: common.SerializeToBytes(contract),
+		}
+		tx := &types.MutableTransaction{
+			Payer:    this.account.Address,
+			GasPrice: 2500,
+			GasLimit: 300000,
+			TxType:   types.InvokeWasm,
+			Nonce:    uint32(time.Now().Unix()),
+			Payload:  invokePayload,
+			Sigs:     nil,
+		}
+		this.ontologySdk.SignToTransaction(tx, this.account)
+
+		txHash, err := this.ontologySdk.SendTransaction(tx)
 		if err != nil {
-			log.Errorf("fulfillOracle, invoke oracle contract error: %s", err)
+			log.Errorf("fulfillOracle, this.ontologySdk.SendTransaction error: %s", err)
 			continue
 		}
 		log.Infof("fulfillOracle success, txHash is: %s", txHash.ToHexString())
