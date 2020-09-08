@@ -1,8 +1,9 @@
 {
-  "JsonRPCAddress": "http://172.168.3.151:20336",
+  "JsonRPCAddress": "http://polaris2.ont.io:20336",
   "WalletFile": "./wallet.dat",
-  "ScanInterval": 2,
-  "FulfillInterval": 60,
+  "ScanInterval": 1,
+  "CheckFailInterval": 6,
+  "CheckFailMax": 3,
   "OracleAddress": "356fb121f0812e4be51d5668d3d26832d2121695",
   "GasPrice": 2500,
   "GasLimit": 20000
