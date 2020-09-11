@@ -174,12 +174,12 @@ func (this *PriceFeedService) fulfillOracle() {
 		for _, v := range allKeys {
 			result, err := this.ontologySdk.WasmVM.PreExecInvokeWasmVMContract(contractAddress, GETUNDERLYINGPRICE, []interface{}{v})
 			if err != nil {
-				log.Errorf("fulfillOracle, this.ontologySdk.WasmVM.PreExecInvokeWasmVMContract error")
+				log.Errorf("fulfillOracle, this.ontologySdk.WasmVM.PreExecInvokeWasmVMContract error: %s", err)
 				continue
 			}
 			r, err := result.Result.ToByteArray()
 			if err != nil {
-				log.Errorf("fulfillOracle, result.Result.ToByteArray error")
+				log.Errorf("fulfillOracle, result.Result.ToByteArray error: %s", err)
 				continue
 			}
 			source := common.NewZeroCopySource(r)
