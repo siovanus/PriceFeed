@@ -1,13 +1,14 @@
 package service
 
 import (
-	"time"
-
-	"github.com/ontio/ontology/common"
+	"fmt"
 	"github.com/ontio/ontology/core/payload"
 	"github.com/ontio/ontology/core/types"
 	"github.com/ontio/ontology/smartcontract/states"
+	"os"
+	"time"
 
+	"github.com/ontio/ontology/common"
 	"github.com/siovanus/PriceFeed/config"
 	"github.com/siovanus/PriceFeed/fetcher"
 	"github.com/siovanus/PriceFeed/log"
@@ -159,16 +160,22 @@ func (this *PriceFeedService) parseDaiData() {
 
 func (this *PriceFeedService) fulfillOracle() {
 	time.Sleep(time.Duration(10*config.DefConfig.ScanInterval) * time.Second)
+	allKeys := []string{ONT, BTC, ETH, DAI, USDT}
+	allValues := []uint64{this.prices[ONT].GetPrice(), this.prices[BTC].GetPrice(), this.prices[ETH].GetPrice(),
+		this.prices[DAI].GetPrice(), this.prices[USDT].GetPrice()}
+	err := this.invokeFulfill(allKeys, allValues)
+	if err != nil {
+		log.Errorf("fulfillOracle, this.invokeFulfill error: %s", err)
+		os.Exit(1)
+	}
+	time.Sleep(time.Duration(10*config.DefConfig.ScanInterval) * time.Second)
 	for {
 		time.Sleep(time.Duration(config.DefConfig.ScanInterval) * time.Second)
-
 		contractAddress, err := common.AddressFromHexString(config.DefConfig.OracleAddress)
 		if err != nil {
 			log.Errorf("fulfillOracle, oracle contract address format error")
-			continue
+			os.Exit(1)
 		}
-
-		allKeys := []string{ONT, BTC, ETH, DAI, USDT}
 		keys := make([]string, 0)
 		values := make([]uint64, 0)
 		for _, v := range allKeys {
@@ -203,50 +210,61 @@ func (this *PriceFeedService) fulfillOracle() {
 		}
 
 		if len(keys) > 0 {
-			sink := common.NewZeroCopySink(nil)
-			sink.WriteString(PUTUNDERLYINGPRICE)
-			length := uint64(len(keys))
-			sink.WriteVarUint(length)
-			for _, v := range keys {
-				sink.WriteString(v)
-			}
-			sink.WriteVarUint(length)
-			for _, v := range values {
-				sink.WriteI128(common.I128FromUint64(v))
-			}
-
-			contract := &states.WasmContractParam{}
-			contract.Address = contractAddress
-			//bf := bytes.NewBuffer(nil)
-			argbytes := sink.Bytes()
-			contract.Args = argbytes
-
-			invokePayload := &payload.InvokeCode{
-				Code: common.SerializeToBytes(contract),
-			}
-			tx := &types.MutableTransaction{
-				Payer:    this.account.Address,
-				GasPrice: 2500,
-				GasLimit: 300000,
-				TxType:   types.InvokeWasm,
-				Nonce:    uint32(time.Now().Unix()),
-				Payload:  invokePayload,
-				Sigs:     nil,
-			}
-			err = this.ontologySdk.SignToTransaction(tx, this.account)
+			err := this.invokeFulfill(keys, values)
 			if err != nil {
-				log.Errorf("fulfillOracle, this.ontologySdk.SignToTransaction error: %s", err)
+				log.Errorf("fulfillOracle, this.invokeFulfill error: %s", err)
 				continue
 			}
-
-			txHash, err := this.ontologySdk.SendTransaction(tx)
-			if err != nil {
-				log.Errorf("fulfillOracle, this.ontologySdk.SendTransaction error: %s", err)
-				continue
-			}
-			log.Infof("fulfillOracle success, txHash is: %s", txHash.ToHexString())
 		}
 	}
+}
+
+func (this *PriceFeedService) invokeFulfill(keys []string, values []uint64) error {
+	contractAddress, err := common.AddressFromHexString(config.DefConfig.OracleAddress)
+	if err != nil {
+		return fmt.Errorf("invokeFulfill, oracle contract address format error")
+	}
+	sink := common.NewZeroCopySink(nil)
+	sink.WriteString(PUTUNDERLYINGPRICE)
+	length := uint64(len(keys))
+	sink.WriteVarUint(length)
+	for _, v := range keys {
+		sink.WriteString(v)
+	}
+	sink.WriteVarUint(length)
+	for _, v := range values {
+		sink.WriteI128(common.I128FromUint64(v))
+	}
+
+	contract := &states.WasmContractParam{}
+	contract.Address = contractAddress
+	//bf := bytes.NewBuffer(nil)
+	argbytes := sink.Bytes()
+	contract.Args = argbytes
+
+	invokePayload := &payload.InvokeCode{
+		Code: common.SerializeToBytes(contract),
+	}
+	tx := &types.MutableTransaction{
+		Payer:    this.account.Address,
+		GasPrice: 2500,
+		GasLimit: 300000,
+		TxType:   types.InvokeWasm,
+		Nonce:    uint32(time.Now().Unix()),
+		Payload:  invokePayload,
+		Sigs:     nil,
+	}
+	err = this.ontologySdk.SignToTransaction(tx, this.account)
+	if err != nil {
+		return fmt.Errorf("invokeFulfill, this.ontologySdk.SignToTransaction error: %s", err)
+	}
+
+	txHash, err := this.ontologySdk.SendTransaction(tx)
+	if err != nil {
+		return fmt.Errorf("invokeFulfill, this.ontologySdk.SendTransaction error: %s", err)
+	}
+	log.Infof("invokeFulfill success, txHash is: %s", txHash.ToHexString())
+	return nil
 }
 
 func (this *PriceFeedService) checkFail() {
