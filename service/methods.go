@@ -16,6 +16,7 @@ import (
 
 const (
 	ONT  = "ONT"
+	ONTD = "ONTd"
 	BTC  = "BTC"
 	ETH  = "ETH"
 	DAI  = "DAI"
@@ -63,6 +64,7 @@ func (this *PriceFeedService) parseOntData() {
 
 		price := sum / length
 		this.prices[ONT].Push(price)
+		this.prices[ONTD].Push(price)
 
 		time.Sleep(time.Duration(config.DefConfig.ScanInterval))
 	}
@@ -160,8 +162,8 @@ func (this *PriceFeedService) parseDaiData() {
 
 func (this *PriceFeedService) fulfillOracle() {
 	time.Sleep(time.Duration(10*config.DefConfig.ScanInterval) * time.Second)
-	allKeys := []string{ONT, BTC, ETH, DAI, USDT}
-	allValues := []uint64{this.prices[ONT].GetPrice(), this.prices[BTC].GetPrice(), this.prices[ETH].GetPrice(),
+	allKeys := []string{ONT, ONTD, BTC, ETH, DAI, USDT}
+	allValues := []uint64{this.prices[ONT].GetPrice(), this.prices[ONTD].GetPrice(), this.prices[BTC].GetPrice(), this.prices[ETH].GetPrice(),
 		this.prices[DAI].GetPrice(), this.prices[USDT].GetPrice()}
 	err := this.invokeFulfill(allKeys, allValues)
 	if err != nil {

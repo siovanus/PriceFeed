@@ -21,6 +21,7 @@ func NewPriceFeedService(account *sdk.Account, ontologySdk *sdk.OntologySdk) *Pr
 		prices:      make(map[string]*Prices),
 	}
 	svr.prices[ONT] = NewPrices()
+	svr.prices[ONTD] = NewPrices()
 	svr.prices[BTC] = NewPrices()
 	svr.prices[ETH] = NewPrices()
 	svr.prices[DAI] = NewPrices()
