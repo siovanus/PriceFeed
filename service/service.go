@@ -25,6 +25,7 @@ func NewPriceFeedService(account *sdk.Account, ontologySdk *sdk.OntologySdk) *Pr
 	svr.prices[BTC] = NewPrices()
 	svr.prices[ETH] = NewPrices()
 	svr.prices[DAI] = NewPrices()
+	svr.prices[USDC] = NewPrices()
 	svr.prices[USDT] = &Prices{[]uint64{uint64(USDTPRICE * math.Pow10(fetcher.DECIMAL))}}
 	return svr
 }
@@ -34,6 +35,7 @@ func (this *PriceFeedService) Run() {
 	go this.parseBtcData()
 	go this.parseEthData()
 	go this.parseDaiData()
+	go this.parseUsdcData()
 	go this.fulfillOracle()
 	go this.checkFail()
 }

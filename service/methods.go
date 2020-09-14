@@ -21,6 +21,7 @@ const (
 	ETH  = "ETH"
 	DAI  = "DAI"
 	USDT = "USDT"
+	USDC = "USDC"
 
 	USDTPRICE = 1
 
@@ -72,28 +73,39 @@ func (this *PriceFeedService) parseOntData() {
 
 func (this *PriceFeedService) parseBtcData() {
 	for {
+		var sum uint64 = 0
+		var length uint64 = 0
 		okexUrl := "https://www.okex.com/api/spot/v3/instruments/BTC-USDT/ticker"
 		okexPrice, err := fetcher.FetchOkex(okexUrl)
 		if err != nil {
 			log.Errorf("parseBtcData, fetcher.FetchOkex %s error: %s", okexUrl, err)
-			continue
+			this.failSum += 1
+		} else {
+			sum += okexPrice
+			length += 1
 		}
 
 		binanceUrl := "https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT"
 		binancePrice, err := fetcher.FetchBinance(binanceUrl)
 		if err != nil {
 			log.Errorf("parseBtcData, fetcher.FetchBinance %s error: %s", binanceUrl, err)
-			continue
+			this.failSum += 1
+		} else {
+			sum += binancePrice
+			length += 1
 		}
 
 		huobiUrl := "https://api.huobi.pro/market/trade?symbol=btcusdt"
 		huobiPrice, err := fetcher.FetchHuobi(huobiUrl)
 		if err != nil {
 			log.Errorf("parseBtcData, fetcher.FetchHuobi %s error: %s", huobiUrl, err)
-			continue
+			this.failSum += 1
+		} else {
+			sum += huobiPrice
+			length += 1
 		}
 
-		price := (okexPrice + binancePrice + huobiPrice) / 3
+		price := sum / length
 		this.prices[BTC].Push(price)
 
 		time.Sleep(time.Duration(config.DefConfig.ScanInterval))
@@ -102,28 +114,39 @@ func (this *PriceFeedService) parseBtcData() {
 
 func (this *PriceFeedService) parseEthData() {
 	for {
+		var sum uint64 = 0
+		var length uint64 = 0
 		okexUrl := "https://www.okex.com/api/spot/v3/instruments/ETH-USDT/ticker"
 		okexPrice, err := fetcher.FetchOkex(okexUrl)
 		if err != nil {
 			log.Errorf("parseEthData, fetcher.FetchOkex %s error: %s", okexUrl, err)
-			continue
+			this.failSum += 1
+		} else {
+			sum += okexPrice
+			length += 1
 		}
 
 		binanceUrl := "https://api.binance.com/api/v3/ticker/price?symbol=ETHUSDT"
 		binancePrice, err := fetcher.FetchBinance(binanceUrl)
 		if err != nil {
 			log.Errorf("parseEthData, fetcher.FetchBinance %s error: %s", binanceUrl, err)
-			continue
+			this.failSum += 1
+		} else {
+			sum += binancePrice
+			length += 1
 		}
 
 		huobiUrl := "https://api.huobi.pro/market/trade?symbol=ethusdt"
 		huobiPrice, err := fetcher.FetchHuobi(huobiUrl)
 		if err != nil {
 			log.Errorf("parseEthData, fetcher.FetchHuobi %s error: %s", huobiUrl, err)
-			continue
+			this.failSum += 1
+		} else {
+			sum += huobiPrice
+			length += 1
 		}
 
-		price := (okexPrice + binancePrice + huobiPrice) / 3
+		price := sum / length
 		this.prices[ETH].Push(price)
 
 		time.Sleep(time.Duration(config.DefConfig.ScanInterval))
@@ -132,29 +155,71 @@ func (this *PriceFeedService) parseEthData() {
 
 func (this *PriceFeedService) parseDaiData() {
 	for {
+		var sum uint64 = 0
+		var length uint64 = 0
 		okexUrl := "https://www.okex.com/api/spot/v3/instruments/DAI-USDT/ticker"
 		okexPrice, err := fetcher.FetchOkex(okexUrl)
 		if err != nil {
 			log.Errorf("parseDaiData, fetcher.FetchOkex %s error: %s", okexUrl, err)
-			continue
+			this.failSum += 1
+		} else {
+			sum += okexPrice
+			length += 1
 		}
 
 		binanceUrl := "https://api.binance.com/api/v3/ticker/price?symbol=DAIUSDT"
 		binancePrice, err := fetcher.FetchBinance(binanceUrl)
 		if err != nil {
 			log.Errorf("parseDaiData, fetcher.FetchBinance %s error: %s", binanceUrl, err)
-			continue
+			this.failSum += 1
+		} else {
+			sum += binancePrice
+			length += 1
 		}
 
 		huobiUrl := "https://api.huobi.pro/market/trade?symbol=daiusdt"
 		huobiPrice, err := fetcher.FetchHuobi(huobiUrl)
 		if err != nil {
 			log.Errorf("parseDaiData, fetcher.FetchHuobi %s error: %s", huobiUrl, err)
-			continue
+			this.failSum += 1
+		} else {
+			sum += huobiPrice
+			length += 1
 		}
 
-		price := (okexPrice + binancePrice + huobiPrice) / 3
+		price := sum / length
 		this.prices[DAI].Push(price)
+
+		time.Sleep(time.Duration(config.DefConfig.ScanInterval) * time.Second)
+	}
+}
+
+func (this *PriceFeedService) parseUsdcData() {
+	for {
+		var sum uint64 = 0
+		var length uint64 = 0
+		okexUrl := "https://www.okex.com/api/spot/v3/instruments/USDC-USDT/ticker"
+		okexPrice, err := fetcher.FetchOkex(okexUrl)
+		if err != nil {
+			log.Errorf("parseDaiData, fetcher.FetchOkex %s error: %s", okexUrl, err)
+			this.failSum += 1
+		} else {
+			sum += okexPrice
+			length += 1
+		}
+
+		binanceUrl := "https://api.binance.com/api/v3/ticker/price?symbol=USDCUSDT"
+		binancePrice, err := fetcher.FetchBinance(binanceUrl)
+		if err != nil {
+			log.Errorf("parseDaiData, fetcher.FetchBinance %s error: %s", binanceUrl, err)
+			this.failSum += 1
+		} else {
+			sum += binancePrice
+			length += 1
+		}
+
+		price := sum / length
+		this.prices[USDC].Push(price)
 
 		time.Sleep(time.Duration(config.DefConfig.ScanInterval) * time.Second)
 	}
@@ -162,9 +227,9 @@ func (this *PriceFeedService) parseDaiData() {
 
 func (this *PriceFeedService) fulfillOracle() {
 	time.Sleep(time.Duration(10*config.DefConfig.ScanInterval) * time.Second)
-	allKeys := []string{ONT, ONTD, BTC, ETH, DAI, USDT}
+	allKeys := []string{ONT, ONTD, BTC, ETH, DAI, USDC, USDT}
 	allValues := []uint64{this.prices[ONT].GetPrice(), this.prices[ONTD].GetPrice(), this.prices[BTC].GetPrice(), this.prices[ETH].GetPrice(),
-		this.prices[DAI].GetPrice(), this.prices[USDT].GetPrice()}
+		this.prices[DAI].GetPrice(), this.prices[USDC].GetPrice(), this.prices[USDT].GetPrice()}
 	err := this.invokeFulfill(allKeys, allValues)
 	if err != nil {
 		log.Errorf("fulfillOracle, this.invokeFulfill error: %s", err)
