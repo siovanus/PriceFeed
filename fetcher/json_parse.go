@@ -20,6 +20,7 @@ package fetcher
 
 import (
 	"encoding/json"
+	"github.com/siovanus/PriceFeed/config"
 	"math"
 	"strconv"
 )
@@ -41,7 +42,7 @@ func OkexParse(input []byte) (uint64, error) {
 	if err != nil {
 		return 0, err
 	}
-	price := uint64(r * math.Pow10(DECIMAL))
+	price := ParsePrice(r)
 	return price, nil
 }
 
@@ -60,7 +61,7 @@ func BinanceParse(input []byte) (uint64, error) {
 	if err != nil {
 		return 0, err
 	}
-	price := uint64(r * math.Pow10(DECIMAL))
+	price := ParsePrice(r)
 	return price, nil
 }
 
@@ -84,6 +85,13 @@ func HuobiParse(input []byte) (uint64, error) {
 	}
 
 	r := huobiResp.Tick.Data[0].Price
-	price := uint64(r * math.Pow10(DECIMAL))
+	price := ParsePrice(r)
 	return price, nil
+}
+
+func ParsePrice(p float64) uint64 {
+	if p > float64(config.DefConfig.MaxPrice) {
+		p = float64(config.DefConfig.MaxPrice)
+	}
+	return uint64(p * math.Pow10(DECIMAL))
 }

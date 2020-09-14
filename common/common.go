@@ -21,7 +21,6 @@ package common
 import (
 	"encoding/binary"
 	"fmt"
-
 	sdk "github.com/ontio/ontology-go-sdk"
 	"github.com/ontio/ontology/common/password"
 )

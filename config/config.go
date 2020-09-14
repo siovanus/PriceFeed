@@ -42,6 +42,7 @@ type Config struct {
 	CheckFailInterval uint64
 	CheckFailMax      uint64
 	OracleAddress     string
+	MaxPrice          uint64
 	GasPrice          uint64
 	GasLimit          uint64
 }
