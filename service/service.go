@@ -23,6 +23,8 @@ func NewPriceFeedService(account *sdk.Account, ontologySdk *sdk.OntologySdk) *Pr
 	svr.prices[ONT] = NewPrices()
 	svr.prices[ONTD] = NewPrices()
 	svr.prices[BTC] = NewPrices()
+	svr.prices[WBTC] = NewPrices()
+	svr.prices[RENBTC] = NewPrices()
 	svr.prices[ETH] = NewPrices()
 	svr.prices[DAI] = NewPrices()
 	svr.prices[USDC] = NewPrices()

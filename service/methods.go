@@ -15,13 +15,15 @@ import (
 )
 
 const (
-	ONT  = "ONT"
-	ONTD = "ONTd"
-	BTC  = "BTC"
-	ETH  = "ETH"
-	DAI  = "DAI"
-	USDT = "USDT"
-	USDC = "USDC"
+	ONT    = "ONT"
+	ONTD   = "ONTd"
+	BTC    = "BTC"
+	WBTC   = "WBTC"
+	RENBTC = "renBTC"
+	ETH    = "ETH"
+	DAI    = "DAI"
+	USDT   = "USDT"
+	USDC   = "USDC"
 
 	USDTPRICE = 1
 
@@ -63,9 +65,11 @@ func (this *PriceFeedService) parseOntData() {
 			length += 1
 		}
 
-		price := sum / length
-		this.prices[ONT].Push(price)
-		this.prices[ONTD].Push(price)
+		if length != 0 {
+			price := sum / length
+			this.prices[ONT].Push(price)
+			this.prices[ONTD].Push(price)
+		}
 
 		time.Sleep(time.Duration(config.DefConfig.ScanInterval))
 	}
@@ -105,8 +109,12 @@ func (this *PriceFeedService) parseBtcData() {
 			length += 1
 		}
 
-		price := sum / length
-		this.prices[BTC].Push(price)
+		if length != 0 {
+			price := sum / length
+			this.prices[BTC].Push(price)
+			this.prices[WBTC].Push(price)
+			this.prices[RENBTC].Push(price)
+		}
 
 		time.Sleep(time.Duration(config.DefConfig.ScanInterval))
 	}
@@ -146,8 +154,10 @@ func (this *PriceFeedService) parseEthData() {
 			length += 1
 		}
 
-		price := sum / length
-		this.prices[ETH].Push(price)
+		if length != 0 {
+			price := sum / length
+			this.prices[ETH].Push(price)
+		}
 
 		time.Sleep(time.Duration(config.DefConfig.ScanInterval))
 	}
@@ -187,8 +197,10 @@ func (this *PriceFeedService) parseDaiData() {
 			length += 1
 		}
 
-		price := sum / length
-		this.prices[DAI].Push(price)
+		if length != 0 {
+			price := sum / length
+			this.prices[DAI].Push(price)
+		}
 
 		time.Sleep(time.Duration(config.DefConfig.ScanInterval) * time.Second)
 	}
@@ -218,8 +230,10 @@ func (this *PriceFeedService) parseUsdcData() {
 			length += 1
 		}
 
-		price := sum / length
-		this.prices[USDC].Push(price)
+		if length != 0 {
+			price := sum / length
+			this.prices[USDC].Push(price)
+		}
 
 		time.Sleep(time.Duration(config.DefConfig.ScanInterval) * time.Second)
 	}
@@ -227,8 +241,9 @@ func (this *PriceFeedService) parseUsdcData() {
 
 func (this *PriceFeedService) fulfillOracle() {
 	time.Sleep(time.Duration(10*config.DefConfig.ScanInterval) * time.Second)
-	allKeys := []string{ONT, ONTD, BTC, ETH, DAI, USDC, USDT}
-	allValues := []uint64{this.prices[ONT].GetPrice(), this.prices[ONTD].GetPrice(), this.prices[BTC].GetPrice(), this.prices[ETH].GetPrice(),
+	allKeys := []string{ONT, ONTD, BTC, WBTC, RENBTC, ETH, DAI, USDC, USDT}
+	allValues := []uint64{this.prices[ONT].GetPrice(), this.prices[ONTD].GetPrice(), this.prices[BTC].GetPrice(),
+		this.prices[WBTC].GetPrice(), this.prices[RENBTC].GetPrice(), this.prices[ETH].GetPrice(),
 		this.prices[DAI].GetPrice(), this.prices[USDC].GetPrice(), this.prices[USDT].GetPrice()}
 	err := this.invokeFulfill(allKeys, allValues)
 	if err != nil {
@@ -272,7 +287,6 @@ func (this *PriceFeedService) fulfillOracle() {
 			if delta >= prePrice/100 {
 				keys = append(keys, v)
 				values = append(values, currentPrice)
-				log.Infof("fulfillOracle, token %s, price %d", v, currentPrice)
 			}
 		}
 
@@ -330,7 +344,7 @@ func (this *PriceFeedService) invokeFulfill(keys []string, values []uint64) erro
 	if err != nil {
 		return fmt.Errorf("invokeFulfill, this.ontologySdk.SendTransaction error: %s", err)
 	}
-	log.Infof("invokeFulfill success, txHash is: %s", txHash.ToHexString())
+	log.Infof("invokeFulfill success, txHash is: %s, keys: %v, values: %v", txHash.ToHexString(), keys, values)
 	return nil
 }
 
