@@ -24,7 +24,7 @@ import (
 	"strconv"
 )
 
-const DECIMAL = 9
+const DECIMAL = 12
 
 type OkexResp struct {
 	Last string `json:"last"`

@@ -4,7 +4,7 @@
   "ScanInterval": 1,
   "CheckFailInterval": 6,
   "CheckFailMax": 3,
-  "OracleAddress": "356fb121f0812e4be51d5668d3d26832d2121695",
+  "OracleAddress": "2927cb865be38d0fddce9cd42b38864074c82ad5",
   "GasPrice": 2500,
   "GasLimit": 20000
 }
