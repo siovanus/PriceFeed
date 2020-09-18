@@ -21,9 +21,11 @@ const (
 	WBTC   = "WBTC"
 	RENBTC = "renBTC"
 	ETH    = "ETH"
+	ETH9   = "ETH9"
 	DAI    = "DAI"
 	USDT   = "USDT"
 	USDC   = "USDC"
+	WING   = "WING"
 
 	USDTPRICE = 1
 
@@ -157,6 +159,7 @@ func (this *PriceFeedService) parseEthData() {
 		if length != 0 {
 			price := sum / length
 			this.prices[ETH].Push(price)
+			this.prices[ETH9].Push(price)
 		}
 
 		time.Sleep(time.Duration(config.DefConfig.ScanInterval))
@@ -239,12 +242,45 @@ func (this *PriceFeedService) parseUsdcData() {
 	}
 }
 
+func (this *PriceFeedService) parseWingData() {
+	for {
+		var sum uint64 = 0
+		var length uint64 = 0
+		okexUrl := "https://www.okex.com/api/spot/v3/instruments/WING-USDT/ticker"
+		okexPrice, err := fetcher.FetchOkex(okexUrl)
+		if err != nil {
+			log.Errorf("parseWingData, fetcher.FetchOkex %s error: %s", okexUrl, err)
+			this.failSum += 1
+		} else {
+			sum += okexPrice
+			length += 1
+		}
+
+		binanceUrl := "https://api.binance.com/api/v3/ticker/price?symbol=WINGUSDT"
+		binancePrice, err := fetcher.FetchBinance(binanceUrl)
+		if err != nil {
+			log.Errorf("parseWingData, fetcher.FetchBinance %s error: %s", binanceUrl, err)
+			this.failSum += 1
+		} else {
+			sum += binancePrice
+			length += 1
+		}
+
+		if length != 0 {
+			price := sum / length
+			this.prices[WING].Push(price)
+		}
+
+		time.Sleep(time.Duration(config.DefConfig.ScanInterval) * time.Second)
+	}
+}
+
 func (this *PriceFeedService) fulfillOracle() {
 	time.Sleep(time.Duration(10*config.DefConfig.ScanInterval) * time.Second)
-	allKeys := []string{ONT, ONTD, BTC, WBTC, RENBTC, ETH, DAI, USDC, USDT}
+	allKeys := []string{ONT, ONTD, BTC, WBTC, RENBTC, ETH, ETH9, DAI, USDC, WING, USDT}
 	allValues := []uint64{this.prices[ONT].GetPrice(), this.prices[ONTD].GetPrice(), this.prices[BTC].GetPrice(),
-		this.prices[WBTC].GetPrice(), this.prices[RENBTC].GetPrice(), this.prices[ETH].GetPrice(),
-		this.prices[DAI].GetPrice(), this.prices[USDC].GetPrice(), this.prices[USDT].GetPrice()}
+		this.prices[WBTC].GetPrice(), this.prices[RENBTC].GetPrice(), this.prices[ETH].GetPrice(), this.prices[ETH9].GetPrice(),
+		this.prices[DAI].GetPrice(), this.prices[USDC].GetPrice(), this.prices[WING].GetPrice(), this.prices[USDT].GetPrice()}
 	err := this.invokeFulfill(allKeys, allValues)
 	if err != nil {
 		log.Errorf("fulfillOracle, this.invokeFulfill error: %s", err)
