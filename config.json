@@ -1,10 +1,10 @@
 {
-  "JsonRPCAddress": "http://dappnode2.ont.io:20336",
+  "JsonRPCAddress": "http://polaris2.ont.io:20336",
   "WalletFile": "./wallet.dat",
   "ScanInterval": 1,
   "CheckFailInterval": 6,
   "CheckFailMax": 3,
-  "OracleAddress": "653e46a76ffdd3639364ff0d0a7d63cb327d65a8",
+  "OracleAddress": "2927cb865be38d0fddce9cd42b38864074c82ad5",
   "MaxPrice": 100000,
   "GasPrice": 2500,
   "GasLimit": 20000

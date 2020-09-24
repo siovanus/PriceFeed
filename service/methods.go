@@ -25,6 +25,7 @@ const (
 	DAI    = "DAI"
 	USDT   = "USDT"
 	USDC   = "USDC"
+	SUSD   = "SUSD"
 	WING   = "WING"
 
 	USDTPRICE = 1
@@ -277,10 +278,11 @@ func (this *PriceFeedService) parseWingData() {
 
 func (this *PriceFeedService) fulfillOracle() {
 	time.Sleep(time.Duration(10*config.DefConfig.ScanInterval) * time.Second)
-	allKeys := []string{ONT, ONTD, BTC, WBTC, RENBTC, ETH, ETH9, DAI, USDC, WING, USDT}
+	allKeys := []string{ONT, ONTD, BTC, WBTC, RENBTC, ETH, ETH9, DAI, USDC, WING, USDT, SUSD}
 	allValues := []uint64{this.prices[ONT].GetPrice(), this.prices[ONTD].GetPrice(), this.prices[BTC].GetPrice(),
-		this.prices[WBTC].GetPrice(), this.prices[RENBTC].GetPrice(), this.prices[ETH].GetPrice(), this.prices[ETH9].GetPrice(),
-		this.prices[DAI].GetPrice(), this.prices[USDC].GetPrice(), this.prices[WING].GetPrice(), this.prices[USDT].GetPrice()}
+		this.prices[WBTC].GetPrice(), this.prices[RENBTC].GetPrice(), this.prices[ETH].GetPrice(),
+		this.prices[ETH9].GetPrice(), this.prices[DAI].GetPrice(), this.prices[USDC].GetPrice(),
+		this.prices[WING].GetPrice(), this.prices[USDT].GetPrice(), this.prices[SUSD].GetPrice()}
 	err := this.invokeFulfill(allKeys, allValues)
 	if err != nil {
 		log.Errorf("fulfillOracle, this.invokeFulfill error: %s", err)
