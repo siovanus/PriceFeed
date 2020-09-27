@@ -30,6 +30,7 @@ func NewPriceFeedService(account *sdk.Account, ontologySdk *sdk.OntologySdk) *Pr
 	svr.prices[DAI] = NewPrices()
 	svr.prices[USDC] = NewPrices()
 	svr.prices[WING] = NewPrices()
+	svr.prices[NEO] = NewPrices()
 	svr.prices[USDT] = &Prices{[]uint64{uint64(USDTPRICE * math.Pow10(fetcher.DECIMAL))}}
 	svr.prices[SUSD] = &Prices{[]uint64{uint64(USDTPRICE * math.Pow10(fetcher.DECIMAL))}}
 	return svr
@@ -42,6 +43,7 @@ func (this *PriceFeedService) Run() {
 	go this.parseDaiData()
 	go this.parseUsdcData()
 	go this.parseWingData()
+	go this.parseNeoData()
 	go this.fulfillOracle()
 	go this.checkFail()
 }

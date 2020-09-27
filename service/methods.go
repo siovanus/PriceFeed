@@ -27,6 +27,7 @@ const (
 	USDC   = "USDC"
 	SUSD   = "SUSD"
 	WING   = "WING"
+	NEO    = "NEO"
 
 	USDTPRICE = 1
 
@@ -276,13 +277,57 @@ func (this *PriceFeedService) parseWingData() {
 	}
 }
 
+func (this *PriceFeedService) parseNeoData() {
+	for {
+		var sum uint64 = 0
+		var length uint64 = 0
+		okexUrl := "https://www.okex.com/api/spot/v3/instruments/NEO-USDT/ticker"
+		okexPrice, err := fetcher.FetchOkex(okexUrl)
+		if err != nil {
+			log.Errorf("parseNeoData, fetcher.FetchOkex %s error: %s", okexUrl, err)
+			this.failSum += 1
+		} else {
+			sum += okexPrice
+			length += 1
+		}
+
+		binanceUrl := "https://api.binance.com/api/v3/ticker/price?symbol=NEOUSDT"
+		binancePrice, err := fetcher.FetchBinance(binanceUrl)
+		if err != nil {
+			log.Errorf("parseNeoData, fetcher.FetchBinance %s error: %s", binanceUrl, err)
+			this.failSum += 1
+		} else {
+			sum += binancePrice
+			length += 1
+		}
+
+		huobiUrl := "https://api.huobi.pro/market/trade?symbol=neousdt"
+		huobiPrice, err := fetcher.FetchHuobi(huobiUrl)
+		if err != nil {
+			log.Errorf("parseNeoData, fetcher.FetchHuobi %s error: %s", huobiUrl, err)
+			this.failSum += 1
+		} else {
+			sum += huobiPrice
+			length += 1
+		}
+
+		if length != 0 {
+			price := sum / length
+			this.prices[NEO].Push(price)
+		}
+
+		time.Sleep(time.Duration(config.DefConfig.ScanInterval) * time.Second)
+	}
+}
+
 func (this *PriceFeedService) fulfillOracle() {
 	time.Sleep(time.Duration(10*config.DefConfig.ScanInterval) * time.Second)
-	allKeys := []string{ONT, ONTD, BTC, WBTC, RENBTC, ETH, ETH9, DAI, USDC, WING, USDT, SUSD}
+	allKeys := []string{ONT, ONTD, BTC, WBTC, RENBTC, ETH, ETH9, DAI, USDC, WING, USDT, SUSD, NEO}
 	allValues := []uint64{this.prices[ONT].GetPrice(), this.prices[ONTD].GetPrice(), this.prices[BTC].GetPrice(),
 		this.prices[WBTC].GetPrice(), this.prices[RENBTC].GetPrice(), this.prices[ETH].GetPrice(),
 		this.prices[ETH9].GetPrice(), this.prices[DAI].GetPrice(), this.prices[USDC].GetPrice(),
-		this.prices[WING].GetPrice(), this.prices[USDT].GetPrice(), this.prices[SUSD].GetPrice()}
+		this.prices[WING].GetPrice(), this.prices[USDT].GetPrice(), this.prices[SUSD].GetPrice(),
+		this.prices[NEO].GetPrice()}
 	err := this.invokeFulfill(allKeys, allValues)
 	if err != nil {
 		log.Errorf("fulfillOracle, this.invokeFulfill error: %s", err)
