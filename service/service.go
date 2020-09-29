@@ -31,6 +31,8 @@ func NewPriceFeedService(account *sdk.Account, ontologySdk *sdk.OntologySdk) *Pr
 	svr.prices[USDC] = NewPrices()
 	svr.prices[WING] = NewPrices()
 	svr.prices[NEO] = NewPrices()
+	svr.prices[UNI] = NewPrices()
+	svr.prices[OKB] = NewPrices()
 	svr.prices[USDT] = &Prices{[]uint64{uint64(USDTPRICE * math.Pow10(fetcher.DECIMAL))}}
 	svr.prices[SUSD] = &Prices{[]uint64{uint64(USDTPRICE * math.Pow10(fetcher.DECIMAL))}}
 	return svr
@@ -44,6 +46,8 @@ func (this *PriceFeedService) Run() {
 	go this.parseUsdcData()
 	go this.parseWingData()
 	go this.parseNeoData()
+	go this.parseUniData()
+	go this.parseOkbData()
 	go this.fulfillOracle()
 	go this.checkFail()
 }
