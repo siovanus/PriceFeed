@@ -41,15 +41,15 @@ func (this *PriceFeedService) parseOntData() {
 	for {
 		var sum uint64 = 0
 		var length uint64 = 0
-		okexUrl := "https://www.okex.com/api/spot/v3/instruments/ONT-USDT/ticker"
-		okexPrice, err := fetcher.FetchOkex(okexUrl)
-		if err != nil {
-			log.Errorf("parseOntData, fetcher.FetchOkex %s error: %s", okexUrl, err)
-			this.failSum += 1
-		} else {
-			sum += okexPrice
-			length += 1
-		}
+		//okexUrl := "https://www.okex.com/api/spot/v3/instruments/ONT-USDT/ticker"
+		//okexPrice, err := fetcher.FetchOkex(okexUrl)
+		//if err != nil {
+		//	log.Errorf("parseOntData, fetcher.FetchOkex %s error: %s", okexUrl, err)
+		//	this.failSum += 1
+		//} else {
+		//	sum += okexPrice
+		//	length += 1
+		//}
 
 		binanceUrl := "https://api.binance.com/api/v3/ticker/price?symbol=ONTUSDT"
 		binancePrice, err := fetcher.FetchBinance(binanceUrl)
@@ -85,15 +85,15 @@ func (this *PriceFeedService) parseBtcData() {
 	for {
 		var sum uint64 = 0
 		var length uint64 = 0
-		okexUrl := "https://www.okex.com/api/spot/v3/instruments/BTC-USDT/ticker"
-		okexPrice, err := fetcher.FetchOkex(okexUrl)
-		if err != nil {
-			log.Errorf("parseBtcData, fetcher.FetchOkex %s error: %s", okexUrl, err)
-			this.failSum += 1
-		} else {
-			sum += okexPrice
-			length += 1
-		}
+		//okexUrl := "https://www.okex.com/api/spot/v3/instruments/BTC-USDT/ticker"
+		//okexPrice, err := fetcher.FetchOkex(okexUrl)
+		//if err != nil {
+		//	log.Errorf("parseBtcData, fetcher.FetchOkex %s error: %s", okexUrl, err)
+		//	this.failSum += 1
+		//} else {
+		//	sum += okexPrice
+		//	length += 1
+		//}
 
 		binanceUrl := "https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT"
 		binancePrice, err := fetcher.FetchBinance(binanceUrl)
@@ -130,15 +130,15 @@ func (this *PriceFeedService) parseEthData() {
 	for {
 		var sum uint64 = 0
 		var length uint64 = 0
-		okexUrl := "https://www.okex.com/api/spot/v3/instruments/ETH-USDT/ticker"
-		okexPrice, err := fetcher.FetchOkex(okexUrl)
-		if err != nil {
-			log.Errorf("parseEthData, fetcher.FetchOkex %s error: %s", okexUrl, err)
-			this.failSum += 1
-		} else {
-			sum += okexPrice
-			length += 1
-		}
+		//okexUrl := "https://www.okex.com/api/spot/v3/instruments/ETH-USDT/ticker"
+		//okexPrice, err := fetcher.FetchOkex(okexUrl)
+		//if err != nil {
+		//	log.Errorf("parseEthData, fetcher.FetchOkex %s error: %s", okexUrl, err)
+		//	this.failSum += 1
+		//} else {
+		//	sum += okexPrice
+		//	length += 1
+		//}
 
 		binanceUrl := "https://api.binance.com/api/v3/ticker/price?symbol=ETHUSDT"
 		binancePrice, err := fetcher.FetchBinance(binanceUrl)
@@ -174,15 +174,15 @@ func (this *PriceFeedService) parseDaiData() {
 	for {
 		var sum uint64 = 0
 		var length uint64 = 0
-		okexUrl := "https://www.okex.com/api/spot/v3/instruments/DAI-USDT/ticker"
-		okexPrice, err := fetcher.FetchOkex(okexUrl)
-		if err != nil {
-			log.Errorf("parseDaiData, fetcher.FetchOkex %s error: %s", okexUrl, err)
-			this.failSum += 1
-		} else {
-			sum += okexPrice
-			length += 1
-		}
+		//okexUrl := "https://www.okex.com/api/spot/v3/instruments/DAI-USDT/ticker"
+		//okexPrice, err := fetcher.FetchOkex(okexUrl)
+		//if err != nil {
+		//	log.Errorf("parseDaiData, fetcher.FetchOkex %s error: %s", okexUrl, err)
+		//	this.failSum += 1
+		//} else {
+		//	sum += okexPrice
+		//	length += 1
+		//}
 
 		binanceUrl := "https://api.binance.com/api/v3/ticker/price?symbol=DAIUSDT"
 		binancePrice, err := fetcher.FetchBinance(binanceUrl)
@@ -217,15 +217,15 @@ func (this *PriceFeedService) parseUsdcData() {
 	for {
 		var sum uint64 = 0
 		var length uint64 = 0
-		okexUrl := "https://www.okex.com/api/spot/v3/instruments/USDC-USDT/ticker"
-		okexPrice, err := fetcher.FetchOkex(okexUrl)
-		if err != nil {
-			log.Errorf("parseDaiData, fetcher.FetchOkex %s error: %s", okexUrl, err)
-			this.failSum += 1
-		} else {
-			sum += okexPrice
-			length += 1
-		}
+		//okexUrl := "https://www.okex.com/api/spot/v3/instruments/USDC-USDT/ticker"
+		//okexPrice, err := fetcher.FetchOkex(okexUrl)
+		//if err != nil {
+		//	log.Errorf("parseDaiData, fetcher.FetchOkex %s error: %s", okexUrl, err)
+		//	this.failSum += 1
+		//} else {
+		//	sum += okexPrice
+		//	length += 1
+		//}
 
 		binanceUrl := "https://api.binance.com/api/v3/ticker/price?symbol=USDCUSDT"
 		binancePrice, err := fetcher.FetchBinance(binanceUrl)
@@ -250,15 +250,15 @@ func (this *PriceFeedService) parseWingData() {
 	for {
 		var sum uint64 = 0
 		var length uint64 = 0
-		okexUrl := "https://www.okex.com/api/spot/v3/instruments/WING-USDT/ticker"
-		okexPrice, err := fetcher.FetchOkex(okexUrl)
-		if err != nil {
-			log.Errorf("parseWingData, fetcher.FetchOkex %s error: %s", okexUrl, err)
-			this.failSum += 1
-		} else {
-			sum += okexPrice
-			length += 1
-		}
+		//okexUrl := "https://www.okex.com/api/spot/v3/instruments/WING-USDT/ticker"
+		//okexPrice, err := fetcher.FetchOkex(okexUrl)
+		//if err != nil {
+		//	log.Errorf("parseWingData, fetcher.FetchOkex %s error: %s", okexUrl, err)
+		//	this.failSum += 1
+		//} else {
+		//	sum += okexPrice
+		//	length += 1
+		//}
 
 		binanceUrl := "https://api.binance.com/api/v3/ticker/price?symbol=WINGUSDT"
 		binancePrice, err := fetcher.FetchBinance(binanceUrl)
@@ -283,15 +283,15 @@ func (this *PriceFeedService) parseNeoData() {
 	for {
 		var sum uint64 = 0
 		var length uint64 = 0
-		okexUrl := "https://www.okex.com/api/spot/v3/instruments/NEO-USDT/ticker"
-		okexPrice, err := fetcher.FetchOkex(okexUrl)
-		if err != nil {
-			log.Errorf("parseNeoData, fetcher.FetchOkex %s error: %s", okexUrl, err)
-			this.failSum += 1
-		} else {
-			sum += okexPrice
-			length += 1
-		}
+		//okexUrl := "https://www.okex.com/api/spot/v3/instruments/NEO-USDT/ticker"
+		//okexPrice, err := fetcher.FetchOkex(okexUrl)
+		//if err != nil {
+		//	log.Errorf("parseNeoData, fetcher.FetchOkex %s error: %s", okexUrl, err)
+		//	this.failSum += 1
+		//} else {
+		//	sum += okexPrice
+		//	length += 1
+		//}
 
 		binanceUrl := "https://api.binance.com/api/v3/ticker/price?symbol=NEOUSDT"
 		binancePrice, err := fetcher.FetchBinance(binanceUrl)
@@ -326,15 +326,15 @@ func (this *PriceFeedService) parseUniData() {
 	for {
 		var sum uint64 = 0
 		var length uint64 = 0
-		okexUrl := "https://www.okex.com/api/spot/v3/instruments/UNI-USDT/ticker"
-		okexPrice, err := fetcher.FetchOkex(okexUrl)
-		if err != nil {
-			log.Errorf("parseUniData, fetcher.FetchOkex %s error: %s", okexUrl, err)
-			this.failSum += 1
-		} else {
-			sum += okexPrice
-			length += 1
-		}
+		//okexUrl := "https://www.okex.com/api/spot/v3/instruments/UNI-USDT/ticker"
+		//okexPrice, err := fetcher.FetchOkex(okexUrl)
+		//if err != nil {
+		//	log.Errorf("parseUniData, fetcher.FetchOkex %s error: %s", okexUrl, err)
+		//	this.failSum += 1
+		//} else {
+		//	sum += okexPrice
+		//	length += 1
+		//}
 
 		binanceUrl := "https://api.binance.com/api/v3/ticker/price?symbol=UNIUSDT"
 		binancePrice, err := fetcher.FetchBinance(binanceUrl)
