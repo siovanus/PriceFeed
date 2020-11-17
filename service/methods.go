@@ -30,13 +30,15 @@ const (
 	NEO    = "NEO"
 	UNI    = "UNI"
 	OKB    = "OKB"
-	ONG = "ONG"
+	ONG    = "ONG"
 
 	USDTPRICE = 1
 
 	PUTUNDERLYINGPRICE = "putUnderlyingPrice"
 	GETUNDERLYINGPRICE = "getUnderlyingPrice"
 )
+
+var Assets = []string{ONT, ONTD, BTC, WBTC, RENBTC, ETH, ETH9, DAI, USDC, WING, USDT, SUSD, NEO, UNI, OKB, ONG}
 
 func (this *PriceFeedService) parseOntData() {
 	for {
@@ -78,7 +80,7 @@ func (this *PriceFeedService) parseOntData() {
 			this.prices[ONTD].Push(price)
 		}
 
-		time.Sleep(time.Duration(config.DefConfig.ScanInterval))
+		time.Sleep(time.Duration(config.DefConfig.ScanInterval) * time.Second)
 	}
 }
 
@@ -123,7 +125,7 @@ func (this *PriceFeedService) parseBtcData() {
 			this.prices[RENBTC].Push(price)
 		}
 
-		time.Sleep(time.Duration(config.DefConfig.ScanInterval))
+		time.Sleep(time.Duration(config.DefConfig.ScanInterval) * time.Second)
 	}
 }
 
@@ -167,7 +169,7 @@ func (this *PriceFeedService) parseEthData() {
 			this.prices[ETH9].Push(price)
 		}
 
-		time.Sleep(time.Duration(config.DefConfig.ScanInterval))
+		time.Sleep(time.Duration(config.DefConfig.ScanInterval) * time.Second)
 	}
 }
 
@@ -414,13 +416,11 @@ func (this *PriceFeedService) parseOngData() {
 
 func (this *PriceFeedService) fulfillOracle() {
 	time.Sleep(time.Duration(10*config.DefConfig.ScanInterval) * time.Second)
-	allKeys := []string{ONT, ONTD, BTC, WBTC, RENBTC, ETH, ETH9, DAI, USDC, WING, USDT, SUSD, NEO, UNI, OKB, ONG}
-	allValues := []uint64{this.prices[ONT].GetPrice(), this.prices[ONTD].GetPrice(), this.prices[BTC].GetPrice(),
-		this.prices[WBTC].GetPrice(), this.prices[RENBTC].GetPrice(), this.prices[ETH].GetPrice(),
-		this.prices[ETH9].GetPrice(), this.prices[DAI].GetPrice(), this.prices[USDC].GetPrice(),
-		this.prices[WING].GetPrice(), this.prices[USDT].GetPrice(), this.prices[SUSD].GetPrice(),
-		this.prices[NEO].GetPrice(), this.prices[UNI].GetPrice(), this.prices[OKB].GetPrice(), this.prices[ONG].GetPrice()}
-	err := this.invokeFulfill(allKeys, allValues)
+	var values []uint64
+	for _, a := range Assets {
+		values = append(values, this.prices[a].GetPrice())
+	}
+	err := this.invokeFulfill(Assets, values)
 	if err != nil {
 		log.Errorf("fulfillOracle, this.invokeFulfill error: %s", err)
 		os.Exit(1)
@@ -435,7 +435,7 @@ func (this *PriceFeedService) fulfillOracle() {
 		}
 		keys := make([]string, 0)
 		values := make([]uint64, 0)
-		for _, v := range allKeys {
+		for _, v := range Assets {
 			result, err := this.ontologySdk.WasmVM.PreExecInvokeWasmVMContract(contractAddress, GETUNDERLYINGPRICE, []interface{}{v})
 			if err != nil {
 				log.Errorf("fulfillOracle, this.ontologySdk.WasmVM.PreExecInvokeWasmVMContract error: %s", err)

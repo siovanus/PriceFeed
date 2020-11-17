@@ -20,20 +20,9 @@ func NewPriceFeedService(account *sdk.Account, ontologySdk *sdk.OntologySdk) *Pr
 		ontologySdk: ontologySdk,
 		prices:      make(map[string]*Prices),
 	}
-	svr.prices[ONT] = NewPrices()
-	svr.prices[ONTD] = NewPrices()
-	svr.prices[BTC] = NewPrices()
-	svr.prices[WBTC] = NewPrices()
-	svr.prices[RENBTC] = NewPrices()
-	svr.prices[ETH] = NewPrices()
-	svr.prices[ETH9] = NewPrices()
-	svr.prices[DAI] = NewPrices()
-	svr.prices[USDC] = NewPrices()
-	svr.prices[WING] = NewPrices()
-	svr.prices[NEO] = NewPrices()
-	svr.prices[UNI] = NewPrices()
-	svr.prices[OKB] = NewPrices()
-	svr.prices[ONG] = NewPrices()
+	for _, a := range Assets {
+		svr.prices[a] = NewPrices()
+	}
 	svr.prices[USDT] = &Prices{[]uint64{uint64(USDTPRICE * math.Pow10(fetcher.DECIMAL))}}
 	svr.prices[SUSD] = &Prices{[]uint64{uint64(USDTPRICE * math.Pow10(fetcher.DECIMAL))}}
 	return svr

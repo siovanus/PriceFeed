@@ -1,6 +1,15 @@
 package fetcher
 
+import (
+	"github.com/siovanus/PriceFeed/log"
+)
+
 func FetchOkex(url string) (uint64, error) {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Errorf("Recovered FetchHuobi: %s", r)
+		}
+	}()
 	resp, err := Get(url)
 	if err != nil {
 		return 0, err
@@ -13,6 +22,11 @@ func FetchOkex(url string) (uint64, error) {
 }
 
 func FetchBinance(url string) (uint64, error) {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Errorf("Recovered FetchHuobi: %s", r)
+		}
+	}()
 	resp, err := Get(url)
 	if err != nil {
 		return 0, err
@@ -25,6 +39,11 @@ func FetchBinance(url string) (uint64, error) {
 }
 
 func FetchHuobi(url string) (uint64, error) {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Errorf("Recovered FetchHuobi: %s", r)
+		}
+	}()
 	resp, err := Get(url)
 	if err != nil {
 		return 0, err
